@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+            android:id="@+id/refresh"
+            android:orderInCategory="100"
+            android:title="刷新"
+            app:showAsAction="never"/>
+    <item
+            android:id="@+id/timeinfo"
+            android:orderInCategory="100"
+            android:title="时间助手"
+            app:showAsAction="never"/>
+    <item
+            android:id="@+id/feedback"
+            android:orderInCategory="100"
+            android:title="反馈"
+            app:showAsAction="never"/>
+    <item
+            android:id="@+id/download"
+            android:orderInCategory="100"
+            android:title="离线下载"
+            app:showAsAction="never"/>
+    <item
+            android:id="@+id/update"
+            android:orderInCategory="100"
+            android:title="检查更新"
+            app:showAsAction="never"/>
+    <item
+            android:id="@+id/share"
+            android:orderInCategory="100"
+            android:title="分享"
+            app:showAsAction="never"/>
+</menu>

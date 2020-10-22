@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <!--软件启动欢迎界面-->
+
+    <android.widget.ImageView
+            android:id="@+id/welcomeimg"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/welcome2"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"/>
+
+    <Button
+            android:id="@+id/chicken_soup"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:background="@color/TextBackGroundColorWelcome"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="@string/welcomestring"
+            android:textColor="@color/colorAccent"
+            android:textSize="16sp" android:focusable="true"/>
+
+    <Button
+            android:id="@+id/welcome_title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/chicken_soup"
+            android:background="@color/TextBackGroundColorWelcome"
+            android:clickable="true"
+            android:gravity="center_horizontal"
+            android:text="@string/welcometitle"
+            android:textColor="@color/colorAccent"
+            android:textSize="25sp" android:focusable="true"/>
+
+
+    <WebView
+            android:id="@+id/GetHtml"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:layout_above="@+id/welcome_title"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="236dp"
+            android:layout_marginBottom="36dp"/>
+
+
+</RelativeLayout>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:background="@drawable/wallpaper_4"
+              android:orientation="vertical">
+
+    <!--摇一摇界面-->
+
+    <android.widget.ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/doge"
+            android:layout_gravity="center"
+            android:id="@+id/shakeimg"
+    />
+
+    <TextView
+            android:text="@string/ShakePhoneInfo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView2"
+            android:clickable="true"
+            android:minHeight="85dp"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:background="@color/TextBackGroundColor"
+            android:textColor="@color/colorAccent"
+            android:layout_marginTop="15dp" android:focusable="true"/>
+
+
+</LinearLayout>

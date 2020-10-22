@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item android:title="界面">
+            <menu>
+                <item
+                        android:id="@+id/homepage"
+                        android:icon="@drawable/home"
+                        android:title="首页"/>
+                <item
+                        android:id="@+id/jiaoshi"
+                        android:icon="@drawable/search"
+                        android:title="空闲教室查询"/>
+                <item
+                        android:id="@+id/shake"
+                        android:icon="@drawable/shake"
+                        android:title="摇一摇"/>
+            </menu>
+        </item>
+        <item android:title="说明">
+            <menu>
+                <item
+                        android:id="@+id/theme_choose"
+                        android:icon="@drawable/theme"
+                        android:title="选择主题"/>
+                <item
+                        android:id="@+id/developer_opensource"
+                        android:icon="@drawable/share"
+                        android:title="软件信息"/>
+                <item
+                        android:id="@+id/version"
+                        android:icon="@drawable/version"
+                        android:title="版本介绍"/>
+            </menu>
+        </item>
+    </group>
+
+
+</menu>
