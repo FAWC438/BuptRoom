@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -22,16 +24,10 @@ import fawc.buptroom.services.EmptyRoom;
 import fawc.buptroom.R;
 import fawc.buptroom.services.TimeInfo;
 
-/**
- * Created by think on 20162016/10/6 000614:05
- * PACKAGE:fawc.buptroom
- * PROJECT:BuptRoom
- */
-
 
 public class BuildingFragment extends Fragment {
     private final EmptyRoom emptyroom = new EmptyRoom();
-    String htmlBody;
+    Set<Map.Entry<String, Object>> roomData;
     View view1, view2, view3, view4, view5;
     ViewPager viewpager;
     private final TimeInfo timeinfo = new TimeInfo();

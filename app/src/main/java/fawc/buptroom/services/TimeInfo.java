@@ -4,11 +4,6 @@ package fawc.buptroom.services;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-/**
- * Created by think on 20162016/9/29 002917:32
- * PACKAGE:fawc.buptroom
- * PROJECT:BuptRoom
- */
 
 public class TimeInfo {
 

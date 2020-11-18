@@ -9,11 +9,6 @@ import android.widget.Button;
 import androidx.fragment.app.Fragment;
 import fawc.buptroom.R;
 
-/**
- * Created by think on 20162016/10/11 001121:07
- * PACKAGE:fawc.buptroom
- * PROJECT:BuptRoom
- */
 
 public class ShakeFragment extends Fragment {
     private boolean shakedflag = false;

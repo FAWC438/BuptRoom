@@ -14,11 +14,6 @@ import fawc.buptroom.services.EmptyRoom;
 import fawc.buptroom.R;
 import fawc.buptroom.services.TimeInfo;
 
-/**
- * Created by think on 20162016/10/12 001211:10
- * PACKAGE:fawc.buptroom
- * PROJECT:BuptRoom
- */
 
 public class ShakeTestActivity extends AppCompatActivity {
 

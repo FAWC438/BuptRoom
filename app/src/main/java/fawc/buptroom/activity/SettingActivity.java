@@ -22,11 +22,6 @@ import com.google.android.material.snackbar.Snackbar;
 import fawc.buptroom.R;
 import fawc.buptroom.utils.ColorPicker;
 
-/*
- * Created by think on 20162016/10/9 00098:48
- * PACKAGE:fawc.buptroom
- * PROJECT:BuptRoom
- */
 
 public class SettingActivity extends AppCompatActivity {
 

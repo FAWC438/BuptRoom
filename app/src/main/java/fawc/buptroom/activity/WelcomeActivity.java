@@ -18,12 +18,6 @@ import fawc.buptroom.R;
 import fawc.buptroom.services.Webget;
 
 
-/*
- * Created by think on 20162016/10/9 000920:57
- * PACKAGE:fawc.buptroom
- * PROJECT:BuptRoom
- */
-
 public class WelcomeActivity extends Activity {
 
     private Webget webget;
@@ -91,37 +85,5 @@ public class WelcomeActivity extends Activity {
 
         }, 2500);
     }
-
-//    public void Notification_show(String Notification_content) {
-//        /**
-//         * Created by fawc on 2016/9/28 0028 9:26
-//         * Parameter [Notification_content] 显示的正文
-//         * Return void
-//         * CLASS:MainActivity
-//         * FILE:MainActivity.java
-//         */
-//
-//        Notification.Builder mBuilder = new Notification.Builder(this);
-//        Bitmap LB = BitmapFactory.decodeResource(getResources(), R.drawable.logoko);
-//        Intent resultIntent = new Intent(WelcomeActivity.this, MainActivity.class);
-//        resultIntent.putExtra("WrongNet", WrongNet);
-//        resultIntent.putExtra("HtmlBody", htmlbody);
-//        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-//                WelcomeActivity.this, 0, resultIntent,
-//                PendingIntent.FLAG_UPDATE_CURRENT);
-//        mBuilder.setContentTitle("BuptRoom")                        //标题
-//                .setContentText(Notification_content)             //内容
-//                .setTicker("BuptRoom提醒")                      //收到信息后状态栏显示的文字信息
-//                .setWhen(System.currentTimeMillis())              //设置通知时间
-//                .setSmallIcon(R.drawable.logoko)             //设置小图标
-//                .setLargeIcon(LB)                     //设置大图标
-//                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)    //设置默认的三色灯与振动器
-//                .setAutoCancel(true)                           //设置点击后取消Notification
-//                .setOngoing(false)                        //设置正在进行
-//                .setContentIntent(resultPendingIntent);
-//        NotificationManager mNManager;
-//        mNManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//        mNManager.notify(1, mBuilder.build());
-//    }
 
 }

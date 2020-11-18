@@ -18,11 +18,6 @@ import fawc.buptroom.utils.MyRecyclerAdapter;
 import fawc.buptroom.R;
 import fawc.buptroom.utils.SwipeableRecyclerViewTouchListener;
 
-/**
- * Created by think on 20162016/10/8 000821:13
- * PACKAGE:fawc.buptroom
- * PROJECT:BuptRoom
- */
 
 public class HomePageFragment extends Fragment {
     private MyRecyclerAdapter mAdapter;

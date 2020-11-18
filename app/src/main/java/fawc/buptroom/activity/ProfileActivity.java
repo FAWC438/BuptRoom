@@ -9,11 +9,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import fawc.buptroom.R;
 
-/*
- * Created by think on 20162016/10/12 001220:47
- * PACKAGE:fawc.buptroom
- * PROJECT:BuptRoom
- */
 
 public class ProfileActivity extends AppCompatActivity {
     @Override
