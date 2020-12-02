@@ -23,10 +23,6 @@ public class ProfileActivity extends AppCompatActivity {
         startCountsBtn.setText(String.format("%s%s", getString(R.string.usetimes), startCounts));
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.arrow_back);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(view -> finish());
     }
 }

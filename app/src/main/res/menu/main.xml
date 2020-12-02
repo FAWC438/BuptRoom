@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-            android:id="@+id/refresh"
+            android:id="@+id/download"
             android:orderInCategory="100"
             android:title="刷新"
             app:showAsAction="never"/>
@@ -15,11 +15,6 @@
             android:id="@+id/feedback"
             android:orderInCategory="100"
             android:title="反馈"
-            app:showAsAction="never"/>
-    <item
-            android:id="@+id/download"
-            android:orderInCategory="100"
-            android:title="离线下载"
             app:showAsAction="never"/>
     <item
             android:id="@+id/update"

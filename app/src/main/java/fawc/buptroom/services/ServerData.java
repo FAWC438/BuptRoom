@@ -1,9 +1,8 @@
 package fawc.buptroom.services;
 
-import android.content.SharedPreferences;
 import com.alibaba.fastjson.JSONObject;
-import fawc.buptroom.R;
-import org.apache.commons.text.StringEscapeUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -11,23 +10,58 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-public class GetServerData {
+@Getter
+@Setter
+public class ServerData {
 
-    GetServerData() {
+    private int campusCode = 2;// 0为本部，1为沙河，其它为全部
+
+    /***
+     *
+     * @param campus 0为本部，1为沙河，其它为全部
+     */
+    public ServerData(int campus) {
+        setCampusCode(campus);
     }
 
-    public static Map<String, int[][]> doPost() {
+    public ServerData() {
+
+    }
+
+    public static String convertToString(int[][] array, int row, int col) {
+        StringBuilder str = new StringBuilder();
+        String tempStr;
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                tempStr = String.valueOf(array[i][j]);
+                str.append(tempStr).append(",");
+            }
+        }
+        return str.toString();
+    }
+
+    public static int[][] convertToArray(String str, int row, int col) {
+        int[][] arrayConvert = new int[row][col];
+        int count = 0;
+        String[] strArray = str.split(",");
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                arrayConvert[i][j] = Integer.parseInt(strArray[count]);
+                ++count;
+            }
+        }
+        return arrayConvert;
+    }
+
+    public Map<String, int[][]> doPostToServer() {
         //创建httpClient对象
         CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse response = null;
-        JSONObject jsonObject = null;
+        JSONObject jsonObject;
         Map<String, int[][]> roomData = new HashMap<>();
         try {
             //创建http请求
@@ -35,10 +69,11 @@ public class GetServerData {
             httpPost.setHeader("Content-type", "application/json;charset=utf-8");
             httpPost.setHeader("Connection", "Close");
             //创建请求内容
-            String jsonStr = "{\"id\":\"lgh\", \"password\":\"lgh438\", \"campusCode\":\"1\"}";
+            String jsonStr = "{\"id\":\"lgh\", \"password\":\"lgh438\", \"campusCode\":\"" + getCampusCode() + "\"}";
             httpPost.setEntity(new StringEntity(jsonStr));
             response = httpClient.execute(httpPost);
             String response_body = EntityUtils.toString(response.getEntity(), "utf-8");
+            System.out.println(response_body);
 
 //            System.out.println(response_body);
 //
@@ -65,6 +100,10 @@ public class GetServerData {
 
                 String temp = stringObjectEntry.getValue().toString();
                 temp = temp.substring(1, temp.length() - 1);
+                if (temp.isEmpty()) {
+                    roomData.put(stringObjectEntry.getKey(), new int[7][14]);
+                    continue;
+                }
                 String[] tempArr = temp.split(",");
                 for (int i = 0; i < tempArr.length; i++) tempArr[i] = tempArr[i].substring(1, tempArr[i].length() - 1);
 
@@ -79,6 +118,7 @@ public class GetServerData {
 
         } catch (Exception e) {
             e.printStackTrace();
+            jsonObject = null;
         } finally {
             //关闭资源
             if (response != null) {

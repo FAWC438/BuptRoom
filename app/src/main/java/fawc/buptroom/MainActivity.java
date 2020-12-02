@@ -3,7 +3,6 @@ package fawc.buptroom;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -18,19 +17,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -46,9 +41,10 @@ import cn.hugeterry.updatefun.UpdateFunGO;
 import cn.hugeterry.updatefun.config.UpdateKey;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import fawc.buptroom.Serializable.SerializableMap;
+import fawc.buptroom.services.ServerData;
 import fawc.buptroom.services.ShakeService;
 import fawc.buptroom.services.TimeInfo;
-import fawc.buptroom.services.Webget;
 import fawc.buptroom.fragment.AboutFragment;
 import fawc.buptroom.fragment.BuildingFragment;
 import fawc.buptroom.fragment.HomePageFragment;
@@ -60,7 +56,6 @@ import fawc.buptroom.utils.CustomPopDialog;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private String htmlBody = "";
     private final String[] interesting = {" ヾ(o◕∀◕)ﾉ新的一周新的开始!",
             " π__π默默学习不说话",
             " （╯－＿－）╯╧╧ 学海无涯苦作舟",
@@ -69,7 +64,7 @@ public class MainActivity extends AppCompatActivity
             " o(*≧▽≦)ツ周六浪起来~",
             " (╭￣3￣)╭♡ 忘记明天是周一吧"};
 
-    private int WrongNet = 1;//网络状况标志位
+    private int netWrong = 1;//网络状况标志位 0为网络无错误，1为网络错误
     private FragmentManager manager;
     private FragmentTransaction transaction;
     private Button snackBarTemp;
@@ -77,8 +72,6 @@ public class MainActivity extends AppCompatActivity
     private int startCounts = 0;
 
     private TimeInfo timeShow;
-    private WebView webview;
-    private Webget webget;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -86,11 +79,16 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = getIntent();
-        htmlBody = intent.getStringExtra("HtmlBody");
-        WrongNet = intent.getIntExtra("WrongNet", 1);
+        // 保证主线程能够访问http协议
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
 
-        if (WrongNet == 0) {
+        Intent intent = getIntent();
+        netWrong = intent.getIntExtra("netWrong", 1);
+
+        if (netWrong == 0) {
             showAlertDialog(8);
         } else {
             showAlertDialog(9);
@@ -115,12 +113,14 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        View headview = navigationView.inflateHeaderView(R.layout.nav_header_main);
-        ImageButton profileBt = headview.findViewById(R.id.profile);
+        View headView = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        ImageButton profileBt = headView.findViewById(R.id.profile);
 
         SharedPreferences sharedPreferences = getSharedPreferences("colorsave", Context.MODE_PRIVATE);
         int mainColor = sharedPreferences.getInt("mainColor", 0);
         Log.i("mainColor", mainColor + "");
+        SharedPreferences sp = getSharedPreferences(getString(R.string.SharedPreferencesFileName), MODE_PRIVATE);
+        SharedPreferences.Editor sp_editor = sp.edit();
 
         Window window = MainActivity.this.getWindow();
         //取消设置透明状态栏,使 ContentView 内容不再覆盖状态栏
@@ -134,106 +134,55 @@ public class MainActivity extends AppCompatActivity
             toolbar.setBackgroundColor(mainColor);
         }
 
-        timeShow = new TimeInfo();
-
-        profileBt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.putExtra("StartCounts", startCounts);
-                intent.setClassName(MainActivity.this, "fawc.buptroom.activity.ProfileActivity");
-                startActivity(intent);
-            }
+        profileBt.setOnClickListener(view -> {
+            Intent intent1 = new Intent();
+            intent1.putExtra("StartCounts", startCounts);
+            intent1.setClassName(MainActivity.this, "fawc.buptroom.activity.ProfileActivity");
+            startActivity(intent1);
         });
         AppStartCounts();
-        if (WrongNet == 1) {
-            try {
-                if (htmlBody == null || !htmlBody.contains("楼"))
-                    if (CheckDownloadHtml(MainActivity.this)) {
-                        showAlertDialog(1);
-                    }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        if (netWrong == 1 && sp.contains("hasData"))
+            showAlertDialog(1);
         /*用于支持自动更新*/
+        // TODO 更新数据
         UpdateKey.API_TOKEN = "70b578b5b400d811889ded55b450435e";
         UpdateKey.APP_ID = "580582f5959d69785500182a";
         UpdateKey.DialogOrNotification = UpdateKey.WITH_DIALOG;
         UpdateFunGO.init(this);
 
-        webview = findViewById(R.id.GetHtml2);
-        webget = new Webget();
-
-
     }
 
-    public boolean CheckDownloadHtml(Context context) throws IOException {
-        /*
-         * Created by fawc on 2016/10/15 0015 11:42
-         * Parameter [context] 上下文
-         * Return boolean
-         * CLASS:MainActivity
-         * FILE:MainActivity.java
-         */
-        File file = new File(context.getCacheDir(), "DownloadHtml.txt");
-        if (!file.exists()) return false;
-        FileInputStream fis = new FileInputStream(file);
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-        String temp = br.readLine();
-        timeShow = new TimeInfo();
-        timeShow.timeSetting();
-        if (temp.equals(timeShow.timeString)) {
-//            Log.i(TAG, "从离线文件中获取内容");
-//            Log.i(TAG,"读取离线测试"+temp+"\n");
-            WrongNet = 0;
-            htmlBody = br.readLine();
-            return true;
-        } else
-            return false;
+    /**
+     * 从服务器更新数据
+     */
+    public void refreshData() {
+        SharedPreferences sp = getSharedPreferences(getString(R.string.SharedPreferencesFileName), MODE_PRIVATE);
+        SharedPreferences.Editor sp_editor = sp.edit();
+
+        SimpleDateFormat df_time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date day = new Date();
+        sp_editor.putString("hasData", df_time.format(day));
+        Map<String, int[][]> data = new ServerData().doPostToServer();
+        if (data != null)
+            netWrong = 0;
+        else {
+            netWrong = 1;
+            return;
+        }
+        for (Map.Entry<String, int[][]> d : data.entrySet()) {
+            sp_editor.putString(d.getKey(), ServerData.convertToString(d.getValue(), 7, 14));
+        }
+        sp_editor.commit();
     }
 
     public void AppStartCounts() {
-        /*
-         * Created by fawc on 2016/10/13 0013 11:12
-         * Parameter [context]上下文
-         * Return void
-         * CLASS:MainActivity
-         * FILE:MainActivity.java
-         */
 
         SharedPreferences sharedPreferences = getSharedPreferences("startcount", Context.MODE_PRIVATE);
         startCounts = sharedPreferences.getInt("startcount", 0);
         startCounts++;
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("startcount", startCounts);
-        editor.apply();//提交修改
-    }
-
-    public void DownloadHtml(Context context) {
-        /*
-         * Created by fawc on 2016/10/13 0013 11:12
-         * Parameter [context]上下文
-         * Return void
-         * CLASS:MainActivity
-         * FILE:MainActivity.java
-         */
-        try {
-            File file = new File(context.getCacheDir(), "DownloadHtml.txt");
-            if (!file.exists()) {
-                file.delete();
-            }
-            file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file, false);
-            final TimeInfo timeinfo = new TimeInfo();
-            timeinfo.timeSetting();
-            fos.write((timeinfo.timeString + "\n").getBytes());
-            fos.write((htmlBody).getBytes());
-//            Log.i(TAG,"已离线htmlbody"+ htmlbody);
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        editor.commit();//提交修改
     }
 
     @Override
@@ -246,15 +195,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        /*
-         * Created by fawc on 2016/10/12 0012 9:58
-         * Parameter [item]
-         * Return boolean
-         * CLASS:MainActivity
-         * FILE:MainActivity.java
-         */
+        SharedPreferences sp = getSharedPreferences(getString(R.string.SharedPreferencesFileName), MODE_PRIVATE);
+
         if (id == R.id.feedback) {
-            String[] email = {"fawc2767@gmail.com"}; // 需要注意，email必须以数组形式传入
+            String[] email = {"kevin_lgh@outlook.com"}; // 需要注意，email必须以数组形式传入
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822"); // 设置邮件格式
             intent.putExtra(Intent.EXTRA_EMAIL, email); // 接收人
@@ -263,25 +207,24 @@ public class MainActivity extends AppCompatActivity
             startActivity(Intent.createChooser(intent, "请选择邮件类应用以发送错误报告"));
             return true;
         } else if (id == R.id.timeinfo) {
-            timeShow.timeSetting();
+            timeShow = new TimeInfo();
             showAlertDialog(2);
         } else if (id == R.id.download) {
-            if (WrongNet == 1) {
+            refreshData();
+            if (netWrong == 1 || !sp.contains("hasData")) {
 //                Log.i(TAG, "离线下载错误");
                 showAlertDialog(3);
-
             } else {
-                try {
-                    if (CheckDownloadHtml(MainActivity.this)) {
+                Date day = new Date();
+                SimpleDateFormat df_day = new SimpleDateFormat("yyyy-MM-dd");
+                String dayStr = df_day.format(day);
+
+                if (sp.getString("hasData", null).split(" ")[0].equals(dayStr)) {
 //                        Log.i(TAG, "今日已经离线");
-                        showAlertDialog(4);
-                    } else {
-                        DownloadHtml(MainActivity.this);
+                    showAlertDialog(4);
+                } else {
 //                        Log.i(TAG, "离线成功");
-                        showAlertDialog(5);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    showAlertDialog(5);
                 }
             }
         } else if (id == R.id.update) {
@@ -294,35 +237,12 @@ public class MainActivity extends AppCompatActivity
             CustomPopDialog dialog = dialogBuild.create();
             dialog.setCanceledOnTouchOutside(true);// 点击外部区域关闭
             dialog.show();
-        } else if (id == R.id.refresh) {
-            webget.init(webview);
-            webget.WebInit();
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //do something
-                    WrongNet = webget.getWrongnet();
-                    htmlBody = webget.getHtmlbody();
-                }
-            }, 2000);
-            if (WrongNet == 0) {
-                showAlertDialog(8);
-            } else {
-                showAlertDialog(9);
-            }
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        /*
-         * Created by fawc on 2016/10/12 0012 9:58
-         * Parameter []
-         * Return void
-         * CLASS:MainActivity
-         * FILE:MainActivity.java
-         */
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
 
@@ -334,18 +254,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        /*
-         * Created by fawc on 2016/9/28 0028 9:27
-         * Parameter [item]
-         * Return boolean
-         * CLASS:MainActivity
-         * FILE:MainActivity.java
-         */
-
+        SharedPreferences sp = getSharedPreferences(getString(R.string.SharedPreferencesFileName), MODE_PRIVATE);
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id == R.id.jiaoshi) {
-            if (WrongNet == 1) {
+            if (netWrong == 1) {
                 showAlertDialog(7);
             } else {
                 if (isServiceWork(MainActivity.this)) {
@@ -355,7 +268,10 @@ public class MainActivity extends AppCompatActivity
                 this.setTitle("教室查询");
                 BuildingFragment buildingfragment = new BuildingFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString("HtmlBody", htmlBody);
+                // 序列化sp中的数据以便传递
+                SerializableMap myMap = new SerializableMap();
+                myMap.setMap(sp.getAll());
+                bundle.putSerializable("BuildingMap", myMap);
                 buildingfragment.setArguments(bundle);
                 buildingfragment.Init();
                 manager = this.getSupportFragmentManager();
@@ -376,8 +292,8 @@ public class MainActivity extends AppCompatActivity
             transaction.commit();
         } else if (id == R.id.version) {
             if (isServiceWork(MainActivity.this)) {
-                Intent stopintent = new Intent(this, ShakeService.class);
-                stopService(stopintent);
+                Intent stopIntent = new Intent(this, ShakeService.class);
+                stopService(stopIntent);
             }
             this.setTitle("版本介绍");
             VersionFragment versionfragment = new VersionFragment();
@@ -387,8 +303,8 @@ public class MainActivity extends AppCompatActivity
             transaction.commit();
         } else if (id == R.id.homepage) {
             if (isServiceWork(MainActivity.this)) {
-                Intent stopintent = new Intent(this, ShakeService.class);
-                stopService(stopintent);
+                Intent stopIntent = new Intent(this, ShakeService.class);
+                stopService(stopIntent);
             }
             this.setTitle("首页");
             HomePageFragment homepagefragment = new HomePageFragment();
@@ -404,41 +320,35 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent();
             intent.setClassName(this, "fawc.buptroom.activity.SettingActivity");
             startActivity(intent);
-        } else if (id == R.id.shake) {
-            if (WrongNet == 1) {
-                showAlertDialog(7);
-            } else {
-                this.setTitle("摇一摇");
-                Intent intent = new Intent();
-                intent.putExtra("HtmlBody", htmlBody);
-                intent.setClass(this, ShakeService.class);
-                startService(intent);
-                ShakeFragment shakefragment = new ShakeFragment();
-                manager = this.getSupportFragmentManager();
-                transaction = manager.beginTransaction();
-                transaction.replace(R.id.frame, shakefragment);
-                transaction.commit();
-            }
-
         }
+//        } else if (id == R.id.shake) {
+//            if (netWrong == 1) {
+//                showAlertDialog(7);
+//            } else {
+//                this.setTitle("摇一摇");
+//                Intent intent = new Intent();
+//                intent.putExtra("HtmlBody", htmlBody);
+//                intent.setClass(this, ShakeService.class);
+//                startService(intent);
+//                ShakeFragment shakefragment = new ShakeFragment();
+//                manager = this.getSupportFragmentManager();
+//                transaction = manager.beginTransaction();
+//                transaction.replace(R.id.frame, shakefragment);
+//                transaction.commit();
+//            }
+//
+//        }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void showAlertDialog(int wrongNum) {
-        /*
-         * Created by fawc on 2016/9/28 0028 9:29
-         * Parameter []
-         * Return void
-         * CLASS:MainActivity
-         * FILE:MainActivity.java
-         */
+    private void showAlertDialog(int paramNum) {
         Handler displayHandler;
         displayHandler = new DisplayHandler();
         Message msg = displayHandler.obtainMessage();
-        msg.what = wrongNum;
+        msg.what = paramNum;
         displayHandler.sendMessage(msg);
 
     }
@@ -498,7 +408,7 @@ public class MainActivity extends AppCompatActivity
                             .setAction("Action", null).show();
                     break;
                 case 2:
-                    Snackbar.make(snackBarTemp, "今天是" + timeShow.timeString + " " + timeShow.curTime + "\n" + interesting[timeShow.dayCounter], Snackbar.LENGTH_LONG)
+                    Snackbar.make(snackBarTemp, "今天是" + timeShow.getTimeString() + " " + timeShow.getCurClass_str() + "\n" + interesting[timeShow.getDayCounter()], Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                     break;
                 case 3:
@@ -516,46 +426,41 @@ public class MainActivity extends AppCompatActivity
                 case 6:
                     new AlertDialog.Builder(MainActivity.this).setTitle("确认退出吗？")
                             .setIcon(R.drawable.logoko)
-                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // 点击“确认”后的操作
-                                    if (isServiceWork(MainActivity.this)) {
-                                        Intent stopintent = new Intent(MainActivity.this, ShakeService.class);
-                                        Log.i(TAG, "The ShakeService has been closed");
-                                        stopService(stopintent);
-                                    }
-                                    MainActivity.this.finish();
+                            .setPositiveButton("确定", (dialog, which) -> {
+                                // 点击“确认”后的操作
+                                if (isServiceWork(MainActivity.this)) {
+                                    Intent stopIntent = new Intent(MainActivity.this, ShakeService.class);
+                                    Log.i(TAG, "The ShakeService has been closed");
+                                    stopService(stopIntent);
                                 }
+                                MainActivity.this.finish();
                             })
-                            .setNegativeButton("返回", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // 点击“返回”后的操作,这里不设置没有任何操作
-                                }
+                            .setNegativeButton("返回", (dialog, which) -> {
+                                // 点击“返回”后的操作,这里不设置没有任何操作
                             }).show();
                     break;
                 case 7:
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setTitle("网络错误");
-                    builder.setMessage("您所在网络环境不是校园网，无法得到空闲教室信息" +
-                            "\n请连接到校园网后重启软件");
+                    builder.setMessage("您所在网络环境可能不佳，无法得到空闲教室信息" +
+                            "\n请检查网络连接或重启软件");
                     builder.setNegativeButton("我知道了", null);
                     builder.show();
                     break;
                 case 8:
-                    Toast netcheckok = Toast.makeText(getApplicationContext(),
+                    Toast netCheckOK = Toast.makeText(getApplicationContext(),
                             "", Toast.LENGTH_LONG);
-                    netcheckok.setGravity(Gravity.TOP, 0, 200);
-                    netcheckok.setText("教室信息已更新");
-                    netcheckok.show();
+                    netCheckOK.setGravity(Gravity.TOP, 0, 200);
+                    netCheckOK.setText("教室信息已更新");
+                    netCheckOK.show();
                     break;
                 case 9:
-                    Toast netcheckwrong = Toast.makeText(getApplicationContext(),
+                    Toast netCheckWrong = Toast.makeText(getApplicationContext(),
                             "", Toast.LENGTH_LONG);
-                    netcheckwrong.setGravity(Gravity.TOP, 0, 200);
-                    netcheckwrong.setText("教室信息更新失败，请刷新");
-                    netcheckwrong.show();
+                    netCheckWrong.setGravity(Gravity.TOP, 0, 200);
+                    netCheckWrong.setText("教室信息更新失败，请刷新");
+                    netCheckWrong.show();
+                    break;
                 default:
                     break;
 

@@ -26,6 +26,7 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
+        exclude 'mozilla/public-suffix-list.txt'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -56,5 +57,9 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
     implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
     implementation 'com.alibaba:fastjson:1.2.73'
+    compileOnly 'org.projectlombok:lombok:1.18.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+    testCompileOnly 'org.projectlombok:lombok:1.18.16'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
 
 }
