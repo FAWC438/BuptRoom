@@ -3,11 +3,15 @@ package fawc.buptroom;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.*;
 
 import android.util.Log;
@@ -38,7 +42,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import cn.hugeterry.updatefun.UpdateFunGO;
-import cn.hugeterry.updatefun.config.UpdateKey;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import fawc.buptroom.Serializable.SerializableMap;
@@ -50,6 +53,7 @@ import fawc.buptroom.fragment.BuildingFragment;
 import fawc.buptroom.fragment.HomePageFragment;
 import fawc.buptroom.fragment.ShakeFragment;
 import fawc.buptroom.fragment.VersionFragment;
+import fawc.buptroom.services.UpdateUrl;
 import fawc.buptroom.utils.CustomPopDialog;
 
 
@@ -116,8 +120,8 @@ public class MainActivity extends AppCompatActivity
         View headView = navigationView.inflateHeaderView(R.layout.nav_header_main);
         ImageButton profileBt = headView.findViewById(R.id.profile);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("colorsave", Context.MODE_PRIVATE);
-        int mainColor = sharedPreferences.getInt("mainColor", 0);
+        SharedPreferences sharedPreferences = getSharedPreferences("colorSave", Context.MODE_PRIVATE);
+        String mainColor = sharedPreferences.getString("mainColor", null);
         Log.i("mainColor", mainColor + "");
         SharedPreferences sp = getSharedPreferences(getString(R.string.SharedPreferencesFileName), MODE_PRIVATE);
         SharedPreferences.Editor sp_editor = sp.edit();
@@ -129,9 +133,9 @@ public class MainActivity extends AppCompatActivity
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         //设置状态栏颜色
 
-        if (mainColor != 0) {
-            window.setStatusBarColor(mainColor);
-            toolbar.setBackgroundColor(mainColor);
+        if (mainColor != null) {
+            window.setStatusBarColor(Color.parseColor(mainColor));
+            toolbar.setBackgroundColor(Color.parseColor(mainColor));
         }
 
         profileBt.setOnClickListener(view -> {
@@ -144,11 +148,11 @@ public class MainActivity extends AppCompatActivity
         if (netWrong == 1 && sp.contains("hasData"))
             showAlertDialog(1);
         /*用于支持自动更新*/
-        // TODO 更新数据
-        UpdateKey.API_TOKEN = "70b578b5b400d811889ded55b450435e";
-        UpdateKey.APP_ID = "580582f5959d69785500182a";
-        UpdateKey.DialogOrNotification = UpdateKey.WITH_DIALOG;
-        UpdateFunGO.init(this);
+
+//        UpdateKey.API_TOKEN = "656c59bd6468ce6ab95b9013a8657b09";
+//        UpdateKey.APP_ID = "5fd0a3edb2eb4609be495aa8";
+//        UpdateKey.DialogOrNotification = UpdateKey.WITH_DIALOG;
+//        UpdateFunGO.init(this);
 
     }
 
@@ -228,7 +232,37 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         } else if (id == R.id.update) {
-            UpdateFunGO.manualStart(this);
+//            UpdateFunGO.manualStart(this);
+            double v = Double.MAX_VALUE;
+            try {
+                v = Double.parseDouble(this.getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            System.out.println("v: " + v);
+            System.out.println("Info: " + UpdateUrl.getUpdateInfo());
+            if (UpdateUrl.getUpdateInfo() > v) {
+                AlertDialog alertDialog;
+                AlertDialog.Builder adBd = new AlertDialog.Builder(MainActivity.this);
+                adBd.setTitle("检测到新版本");
+                adBd.setMessage("是否更新？");
+                adBd.setPositiveButton("是", (dialog, which) -> {
+                    Intent intent = new Intent();
+                    intent.setAction("android.intent.action.VIEW");
+                    Uri content_url = Uri.parse(UpdateUrl.getDownloadUrl());//此处填链接
+                    intent.setData(content_url);
+                    startActivity(intent);
+                });
+                adBd.setNegativeButton("否", (dialog, which) -> {
+                    // do nothing
+                });
+                alertDialog = adBd.create();
+                alertDialog.show();
+            } else if (UpdateUrl.getUpdateInfo() == 0) {
+                Toast.makeText(MainActivity.this, "网络错误，更新失败", 1).show();
+            } else {
+                Toast.makeText(MainActivity.this, "应用已经是最新啦！", 1).show();
+            }
         } else if (id == R.id.share) {
             Resources r = MainActivity.this.getResources();
             Bitmap bmp = BitmapFactory.decodeResource(r, R.drawable.share_app);
@@ -286,6 +320,13 @@ public class MainActivity extends AppCompatActivity
             }
             this.setTitle("软件信息");
             AboutFragment aboutfragment = new AboutFragment();
+            Bundle bundle = new Bundle();
+            try {
+                bundle.putString("Version", getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            aboutfragment.setArguments(bundle);
             manager = this.getSupportFragmentManager();
             transaction = manager.beginTransaction();
             transaction.replace(R.id.frame, aboutfragment);
@@ -384,17 +425,17 @@ public class MainActivity extends AppCompatActivity
         return isWork;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        UpdateFunGO.onResume(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        UpdateFunGO.onStop(this);
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        UpdateFunGO.onResume(this);
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        UpdateFunGO.onStop(this);
+//    }
 
     @SuppressLint("HandlerLeak")
     class DisplayHandler extends Handler {

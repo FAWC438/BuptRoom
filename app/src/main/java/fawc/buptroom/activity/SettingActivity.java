@@ -166,12 +166,12 @@ public class SettingActivity extends AppCompatActivity {
         } else {
             Snackbar.make(saveBtn, "修改主题成功，重启后生效", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-            SharedPreferences sharedPreferences = getSharedPreferences("colorsave", Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences("colorSave", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt("maincolor", Color.parseColor("#" + red + green + blue));
-            editor.putInt("imgnum", maxNum);
+            editor.putString("mainColor", "#" + red + green + blue);
+            editor.putInt("imgNum", maxNum);
             Log.i(TAG, Integer.toString(maxNum));
-            editor.apply();//提交修改
+            editor.commit();//提交修改
         }
 
 

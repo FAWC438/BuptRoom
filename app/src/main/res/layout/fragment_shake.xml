@@ -10,7 +10,7 @@
     <android.widget.ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@drawable/doge"
+            android:src="@drawable/head_icon"
             android:layout_gravity="center"
             android:id="@+id/shakeimg"
     />

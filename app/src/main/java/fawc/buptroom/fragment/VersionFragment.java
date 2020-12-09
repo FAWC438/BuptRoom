@@ -18,9 +18,9 @@ public class VersionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.version, container, false);
-        TextView tv = (TextView) v.findViewById(R.id.show_content);
+        TextView tv = v.findViewById(R.id.show_content);
         tv.setText(R.string.version);
-        TextView versiontv = (TextView) v.findViewById(R.id.history_version);
+        TextView versiontv = v.findViewById(R.id.history_version);
         versiontv.setText(R.string.version_history);
         return v;
 

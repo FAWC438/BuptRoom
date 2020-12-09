@@ -46,34 +46,7 @@ public class ShakeTestActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.arrow_back);
         toolbar.setNavigationOnClickListener(view -> finish());
         TextView recommendedRoom = findViewById(R.id.RecommandRoom);
-        Init();
         recommendedRoom.setText(Handle());
-    }
-
-    private void Init() {
-//        BuildingName.add("教一楼");
-//        BuildingName.add("教二楼");
-//        BuildingName.add("教三楼");
-//        BuildingName.add("教四楼");
-//        BuildingName.add("教学实验综合楼-北楼");
-//        BuildingName.add("教学实验综合楼-南楼");
-//        BuildingName.add("沙河校区多功能厅");
-
-//        if (timeinfo.getCurClass_str().contains("12")) {
-//            curClass = 0;
-//        } else if (timeinfo.getCurClass_str().contains("34")) {
-//            curClass = 1;
-//        } else if (timeinfo.getCurClass_str().contains("56")) {
-//            curClass = 2;
-//        } else if (timeinfo.getCurClass_str().contains("78")) {
-//            curClass = 3;
-//        } else if (timeinfo.getCurClass_str().contains("9")) {
-//            curClass = 4;
-//        } else if (timeinfo.getCurClass_str().contains("10")) {
-//            curClass = 5;
-//        } else if (timeinfo.getCurClass_str().contains("休息")) {
-//            curClass = 6;
-//        }
     }
 
     private String Handle() {
@@ -84,24 +57,6 @@ public class ShakeTestActivity extends AppCompatActivity {
         if (timeInfo.getCurClass_int() == 0)
             return "现在是休息时间";
         else {
-//            for (int i = 0; i < 7; i++) {
-//                tempClass.clear();
-//                tempClass = emptyroom.get_show_content(BuildingName.get(i), htmlBody);
-//                if (tempClass.get(curClass).length() > countmax) {
-//                    countmax = tempClass.get(curClass).length();
-//                    maxi = i;
-//                }
-//            }
-//            tempClass.clear();
-//            tempClass = emptyroom.get_show_content(BuildingName.get(maxi), htmlBody);
-//            temp = tempClass.get(curClass);
-//            for (int i = 0; i < countmax; i++) {
-//                if (temp.charAt(i) == '-') {
-//                    resultRoom.add(temp.substring(i + 1, i + 4));
-//                    roomcount++;
-//                }
-//            }
-//            result = BuildingName.get(maxi) + "\n" + resultRoom.get(random.nextInt(roomcount));
             if (buildingMap == null)
                 return "数据错误！";
             for (String s : buildingMap.keySet()) {
@@ -120,9 +75,9 @@ public class ShakeTestActivity extends AppCompatActivity {
                         buildingName = "教三楼";
                     } else if (s.charAt(0) == '4') {
                         buildingName = "教四楼";
-                    } else if (s.charAt(0) == 'n') {
+                    } else if (s.charAt(0) == 'N') {
                         buildingName = "教学实验综合楼-北楼";
-                    } else if (s.charAt(0) == 's') {
+                    } else if (s.charAt(0) == 'S') {
                         buildingName = "教学实验综合楼-南楼";
                     } else {
                         buildingName = "沙河校区多功能厅";

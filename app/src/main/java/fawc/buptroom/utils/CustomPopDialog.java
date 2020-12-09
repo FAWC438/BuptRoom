@@ -52,20 +52,17 @@ public class CustomPopDialog extends Dialog {
             ImageView img = layout.findViewById(R.id.img_qrcode);
             img.setImageBitmap(getImage());
             Button shareBtn = layout.findViewById(R.id.share_bt);
-            shareBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String shareContent = "  Stay Hungry Stay Foolish\n" +
-                            "Stay Studying With BuptRoom\n" +
-                            "————————————————\n" +
-                            "   http://fir.im/buptroom\n" +
-                            "————————————————";
-                    Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
-                    sendIntent.setType("text/plain");
-                    context.startActivity(Intent.createChooser(sendIntent, "分享到"));
-                }
+            shareBtn.setOnClickListener(view -> {
+                String shareContent = "  Stay Hungry Stay Foolish\n" +
+                        "Stay Studying With BuptRoom\n" +
+                        "————————————————\n" +
+                        "   http://d.firim.top/BuptRoom\n" +
+                        "————————————————";
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
+                sendIntent.setType("text/plain");
+                context.startActivity(Intent.createChooser(sendIntent, "分享到"));
             });
             return dialog;
         }
