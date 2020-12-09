@@ -67,11 +67,11 @@ public class BuildingFragment extends Fragment {
 
         view5 = inflater.inflate(R.layout.building_n, container, false);
         view5.setScrollContainer(true);
-        SetPage(view5, "n");
+        SetPage(view5, "N");
 
         view6 = inflater.inflate(R.layout.building_s, container, false);
         view6.setScrollContainer(true);
-        SetPage(view6, "s");
+        SetPage(view6, "S");
 
         view7 = inflater.inflate(R.layout.building_activity, container, false);
         view7.setScrollContainer(true);
