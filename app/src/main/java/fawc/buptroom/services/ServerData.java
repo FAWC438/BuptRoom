@@ -13,6 +13,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -50,6 +51,8 @@ public class ServerData {
         String[] strArray = str.split(",");
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
+                if (!Objects.equals(strArray[count], "0") || !Objects.equals(strArray[count], "1"))
+                    strArray[count] = "0";
                 arrayConvert[i][j] = Integer.parseInt(strArray[count]);
                 ++count;
             }

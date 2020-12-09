@@ -320,24 +320,27 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent();
             intent.setClassName(this, "fawc.buptroom.activity.SettingActivity");
             startActivity(intent);
+
+        } else if (id == R.id.shake) {
+            if (netWrong == 1) {
+                showAlertDialog(7);
+            } else {
+                this.setTitle("摇一摇");
+                Intent intent = new Intent();
+                // 序列化sp中的数据以便传递
+                SerializableMap myMap = new SerializableMap();
+                myMap.setMap(sp.getAll());
+                intent.putExtra("BuildingMap", myMap);
+                intent.setClass(this, ShakeService.class);
+                startService(intent);
+                ShakeFragment shakefragment = new ShakeFragment();
+                manager = this.getSupportFragmentManager();
+                transaction = manager.beginTransaction();
+                transaction.replace(R.id.frame, shakefragment);
+                transaction.commit();
+            }
+
         }
-//        } else if (id == R.id.shake) {
-//            if (netWrong == 1) {
-//                showAlertDialog(7);
-//            } else {
-//                this.setTitle("摇一摇");
-//                Intent intent = new Intent();
-//                intent.putExtra("HtmlBody", htmlBody);
-//                intent.setClass(this, ShakeService.class);
-//                startService(intent);
-//                ShakeFragment shakefragment = new ShakeFragment();
-//                manager = this.getSupportFragmentManager();
-//                transaction = manager.beginTransaction();
-//                transaction.replace(R.id.frame, shakefragment);
-//                transaction.commit();
-//            }
-//
-//        }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -355,11 +358,6 @@ public class MainActivity extends AppCompatActivity
 
     public boolean isServiceWork(Context mContext) {
         /*
-         * Created by fawc on 2016/10/12 0012 19:30
-         * Parameter [mContext, serviceName]
-         * Return boolean
-         * CLASS:MainActivity
-         * FILE:MainActivity.java
          * 判断Shake服务是否正在运行的方法
          *
          * @param mContext
@@ -412,15 +410,15 @@ public class MainActivity extends AppCompatActivity
                             .setAction("Action", null).show();
                     break;
                 case 3:
-                    Snackbar.make(snackBarTemp, "离线下载错误", Snackbar.LENGTH_LONG)
+                    Snackbar.make(snackBarTemp, "刷新错误", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                     break;
                 case 4:
-                    Snackbar.make(snackBarTemp, "今日已经离线", Snackbar.LENGTH_LONG)
+                    Snackbar.make(snackBarTemp, "刷新成功（已经是今天最新数据啦，不用频繁刷新哦）", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                     break;
                 case 5:
-                    Snackbar.make(snackBarTemp, "离线成功", Snackbar.LENGTH_LONG)
+                    Snackbar.make(snackBarTemp, "刷新成功", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                     break;
                 case 6:

@@ -13,10 +13,10 @@
                         android:id="@+id/jiaoshi"
                         android:icon="@drawable/search"
                         android:title="空闲教室查询"/>
-<!--                <item-->
-<!--                        android:id="@+id/shake"-->
-<!--                        android:icon="@drawable/shake"-->
-<!--                        android:title="摇一摇"/>-->
+                <item
+                        android:id="@+id/shake"
+                        android:icon="@drawable/shake"
+                        android:title="摇一摇"/>
             </menu>
         </item>
         <item android:title="说明">

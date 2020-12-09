@@ -10,23 +10,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.PagerTabStrip;
-import fawc.buptroom.Serializable.SerializableMap;
-import fawc.buptroom.services.EmptyRoom;
+import androidx.viewpager.widget.ViewPager;
 import fawc.buptroom.R;
+import fawc.buptroom.Serializable.SerializableMap;
 import fawc.buptroom.services.ServerData;
 import fawc.buptroom.services.TimeInfo;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -49,22 +47,6 @@ public class BuildingFragment extends Fragment {
         strip.setTabIndicatorColorResource(R.color.colorPrimary);
 
         timeinfo = new TimeInfo();
-
-//        if (timeinfo.curTime.contains("12")) {
-//            curClass = 0;
-//        } else if (timeinfo.curTime.contains("34")) {
-//            curClass = 1;
-//        } else if (timeinfo.curTime.contains("56")) {
-//            curClass = 2;
-//        } else if (timeinfo.curTime.contains("78")) {
-//            curClass = 3;
-//        } else if (timeinfo.curTime.contains("9")) {
-//            curClass = 4;
-//        } else if (timeinfo.curTime.contains("10")) {
-//            curClass = 5;
-//        } else if (timeinfo.curTime.contains("休息")) {
-//            curClass = 6;
-//        }
 
         //把各个layout转成view,加入ViewPager中
         view1 = inflater.inflate(R.layout.building_1, container, false);
@@ -174,13 +156,6 @@ public class BuildingFragment extends Fragment {
     }
 
     public void SetPage(View view, String buildingName) {
-        /*
-         * Created by fawc on 2016/10/12 0012 9:56
-         * Parameter [view, buildingname]要显示文字的view,显示内容所属的楼名
-         * Return void
-         * CLASS:BuildingFragment
-         * FILE:BuildingFragment.java
-         */
 
         TextView t;
         // ArrayList<String> tempclass = new ArrayList<>();

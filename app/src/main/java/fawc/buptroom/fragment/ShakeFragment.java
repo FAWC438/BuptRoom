@@ -11,9 +11,9 @@ import fawc.buptroom.R;
 
 
 public class ShakeFragment extends Fragment {
-    private boolean shakedflag = false;
-    public Button startbt;
-    public Button endbt;
+    private boolean shakedFlag = false;
+    public Button startBtn;
+    public Button endBtn;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_shake, container, false);

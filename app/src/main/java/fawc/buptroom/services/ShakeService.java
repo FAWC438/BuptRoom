@@ -11,21 +11,19 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+import fawc.buptroom.Serializable.SerializableMap;
+
+import java.util.Map;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
-/**
- * Created by think on 20162016/10/11 001120:58
- * PACKAGE:fawc.buptroom
- * PROJECT:BuptRoom
- */
 
 public class ShakeService extends Service {
     public static final String TAG = "ShakeService";
     private SensorManager mSensorManager;
     public boolean flag = false;
     private final ShakeBinder shakebinder = new ShakeBinder();
-    private String htmlBody = "";
+    private SerializableMap serializableMap;
 
     @Override
     public void onCreate() {
@@ -53,8 +51,7 @@ public class ShakeService extends Service {
                 mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 //SensorManager.SENSOR_DELAY_GAME,
                 50 * 1000); //batch every 50 milliseconds
-        htmlBody = intent.getStringExtra("HtmlBody");
-
+        serializableMap = (SerializableMap) intent.getSerializableExtra("BuildingMap");
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -99,7 +96,7 @@ public class ShakeService extends Service {
         flag = true;
         Toast.makeText(getApplicationContext(), "摇一摇成功", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent();
-        intent.putExtra("HtmlBody", htmlBody);
+        intent.putExtra("BuildingMap", serializableMap);
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
         intent.setClassName(this, "fawc.buptroom.activity.ShakeTestActivity");
         startActivity(intent);
