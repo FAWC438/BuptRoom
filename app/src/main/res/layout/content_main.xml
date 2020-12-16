@@ -16,11 +16,6 @@
     android:visibility="invisible"
    >
 
-    <!--这个Layout完全不显示，
-    是以前版本遗留的，
-    但是不能删，
-    因为依靠其中的Webview拉取教室信息-->
-
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -35,13 +30,6 @@
             android:textStyle="bold"
             android:id="@+id/show_content"/>
     </ScrollView>
-
-    <WebView
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:visibility="invisible"
-        android:id="@+id/web">
-    </WebView>
 
     <Button
         android:layout_width="match_parent"

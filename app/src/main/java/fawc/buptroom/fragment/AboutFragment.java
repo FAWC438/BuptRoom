@@ -15,7 +15,7 @@ public class AboutFragment extends Fragment {
         View v = inflater.inflate(R.layout.about, container, false);
         TextView tv = v.findViewById(R.id.show_content);
         assert getArguments() != null;
-        tv.setText("开发\nFAWC-bupt\n\n版本:V" + getArguments().getString("Version") + "\n\n项目开源:\nhttps://github.com/FAWC-bupt/Android-devlopment\n");
+        tv.setText("开发\nFAWC-bupt\n\n版本:V" + getArguments().getString("Version") + "\n\n项目开源:\nhttps://github.com/FAWC-bupt/BuptRoom\n");
         return v;
     }
 
